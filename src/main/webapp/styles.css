@@ -1,0 +1,116 @@
+/* Background and font settings */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e0f7fa; /* Ελαφρύ γαλάζιο χρώμα για το background */
+    margin: 0;
+    padding: 20px;
+}
+
+/* Form container styling */
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #ffffff; /* Λευκό χρώμα για το πλαίσιο */
+    padding: 30px;
+    border-radius: 10px; /* Προσθέτει στρογγυλεμένες γωνίες */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); /* Προσθέτει πιο εμφανή σκιά */
+    box-sizing: border-box;
+}
+
+/* Title styling */
+h2 {
+    text-align: center;
+    color: #00695c; /* Σκούρο πράσινο */
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Form input and label styling */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #00796b; /* Πράσινο-μπλε χρώμα */
+}
+
+input, select, textarea {
+    width: calc(100% - 20px);
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #b2dfdb; /* Απαλό πράσινο περίγραμμα */
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #e0f2f1; /* Ελαφρύ πράσινο φόντο στα input πεδία */
+}
+
+input[type="radio"], input[type="checkbox"] {
+    width: auto;
+    margin-right: 5px;
+}
+
+/* Button styling */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #00796b; /* Πράσινο-μπλε χρώμα για το κουμπί */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease; /* Ομαλή μετάβαση στο hover */
+}
+
+button:hover {
+    background-color: #004d40; /* Πιο σκούρο πράσινο στο hover */
+}
+
+/* Terms text styling */
+.terms {
+    font-size: 12px;
+    color: #555; /* Γκρι χρώμα για το κείμενο */
+}
+
+/* Form group with radio and checkbox alignment */
+input[type="radio"], input[type="checkbox"] {
+    margin-left: 10px;
+}
+
+/* Password container styling for horizontal layout */
+.password-container {
+    display: flex;
+    align-items: center;
+}
+
+.password-container input[type="password"] {
+    flex: 1;
+}
+
+.password-container button {
+    width: auto; /* Override the default width */
+    padding: 8px; /* Adjust padding for smaller button */
+    background-color: #00796b; /* Same color as other buttons */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 5px; /* Space between input and button */
+    transition: background-color 0.3s ease;
+}
+
+.password-container button:hover {
+    background-color: #004d40; /* Darker on hover */
+}
+
+
+.map-marker {
+    background-color: red;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+}
