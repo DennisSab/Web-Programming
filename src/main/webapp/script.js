@@ -2,15 +2,31 @@
 document.getElementById('type').addEventListener('change', function() {
     const volunteerFields = document.getElementById('volunteerFields');
     const termsText = document.getElementById('termsText');
+    const heightField = document.getElementById('height'); // Get the height field
+    const weightField = document.getElementById('weight'); // Get the weight field
 
     if (this.value === 'volunteer') {
+        // Show volunteer fields
         volunteerFields.style.display = 'block';
+
+        // Add "required" attributes to height and weight fields
+        heightField.setAttribute('required', 'required');
+        weightField.setAttribute('required', 'required');
+
+        // Update the terms text for volunteers
         termsText.innerHTML = `
             Απαγορεύεται η άσκοπη χρήση της εφαρμογής. Συμφωνώ πως η άσκοπη χρήση της θα διώκεται ποινικά.
             Δηλώνω υπεύθυνα ότι ανήκω στο ενεργό δυναμικό των εθελοντών πυροσβεστών.
         `;
     } else {
+        // Hide volunteer fields
         volunteerFields.style.display = 'none';
+
+        // Remove "required" attributes from height and weight fields
+        heightField.removeAttribute('required');
+        weightField.removeAttribute('required');
+
+        // Update the terms text for regular users
         termsText.innerHTML = `
             Απαγορεύεται η άσκοπη χρήση της εφαρμογής. Συμφωνώ πως η άσκοπη χρήση της θα διώκεται ποινικά.
         `;
@@ -26,6 +42,7 @@ document.getElementById('togglePassword').addEventListener('click', function() {
     confirmPasswordInput.type = type;
     this.textContent = type === 'password' ? 'Show' : 'Hide';
 });
+
 
 // Check password strength when button is clicked
 document.getElementById('checkStrength').addEventListener('click', function() {
@@ -86,69 +103,6 @@ function checkPasswordStrength(password) {
     return "medium";
 }
 
-// Calculate age based on birthdate
-function calculateAge(birthdate) {
-    const today = new Date();
-    let age = today.getFullYear() - birthdate.getFullYear();
-    const monthDiff = today.getMonth() - birthdate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdate.getDate())) {
-        age--;
-    }
-    return age;
-}
-
-// Handle form submission and display JSON if validation passes
-document.getElementById('registrationForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent form's default submission behavior
-    const userType = document.getElementById('type').value;
-    const birthdate = new Date(document.getElementById('birthdate').value);
-    const age = calculateAge(birthdate);
-    const errorSpan = document.getElementById('password-error');
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
-    const strengthMessage = document.getElementById('password-strength-message');
-
-    // Reset error messages
-    errorSpan.textContent = '';
-    strengthMessage.textContent = '';
-
-    // Age validation for volunteer firefighters
-    if (userType === 'volunteer' && (age < 18 || age > 55)) {
-        alert('Η ηλικία των εθελοντών πυροσβεστών πρέπει να είναι μεταξύ 18 και 55 ετών.');
-        return;
-    }
-
-    // Password match check
-    if (password !== confirmPassword) {
-        errorSpan.textContent = 'Οι κωδικοί δεν ταιριάζουν!';
-        return;
-    }
-
-    // Password strength check
-    const strength = checkPasswordStrength(password);
-    if (strength === "weak") {
-        strengthMessage.textContent = 'Weak password';
-        return;
-    }
-
-    // If all validations pass, display form data as JSON
-    displayFormDataAsJSON();
-});
-
-// Function to display form data as JSON below the form
-function displayFormDataAsJSON() {
-    const form = document.getElementById('registrationForm');
-    const formData = new FormData(form);
-    const dataObject = {};
-
-    formData.forEach((value, key) => {
-        dataObject[key] = value;
-    });
-
-    const jsonOutput = JSON.stringify(dataObject, null, 2); // Pretty print JSON
-    document.getElementById('formDataOutput').textContent = jsonOutput;
-}
-
 
 // Address Verification Setup
 let isAddressVerified = false;
@@ -185,10 +139,10 @@ document.getElementById('verifyAddress').addEventListener('click', function() {
 
     xhr.addEventListener("readystatechange", function () {
         if (this.readyState === this.DONE) {
-            console.log("Response received:", this.responseText); 
+            console.log("Response received:", this.responseText);
             try {
                 const data = JSON.parse(this.responseText);
-                
+
                 if (data && data.length > 0) {
                     const result = data[0];
                     const displayName = result.display_name;
@@ -293,29 +247,4 @@ document.getElementById('verifyAddress').addEventListener('click', function() {
         document.getElementById('showMap').style.display = 'none';
         document.getElementById('mapContainer').style.display = 'none';
     }
-});
-
-
-
-document.getElementById("registrationForm").addEventListener("submit", function (event) {
-    event.preventDefault(); // Prevent default form submission
-
-    const formData = new FormData(this);
-
-    fetch("/A3_4739/register", {
-        method: "POST",
-        body: JSON.stringify(Object.fromEntries(formData)),
-        headers: {
-            "Content-Type": "application/json",
-        },
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Success:", data);
-            alert("Registration Successful");
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("Registration Failed");
-        });
 });
