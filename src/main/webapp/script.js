@@ -248,3 +248,47 @@ document.getElementById('verifyAddress').addEventListener('click', function() {
         document.getElementById('mapContainer').style.display = 'none';
     }
 });
+
+
+document.getElementById('registrationForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    const formData = new FormData(this);
+    const userType = formData.get('type'); // Get the selected user type
+    const targetURL = userType === 'volunteer' ? '/A3_4739/saveVolunteer' : '/A3_4739/saveUser'; // Decide the endpoint based on the type
+
+    // Convert formData to a JSON object
+    const jsonData = {};
+    formData.forEach((value, key) => {
+        jsonData[key] = value;
+    });
+
+    // Make the AJAX request
+    fetch(targetURL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonData), // Send data as JSON
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert('Registration successful!');
+                // Optionally clear the form
+                document.getElementById('registrationForm').reset();
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            alert('An error occurred while processing the registration.');
+        });
+});
+

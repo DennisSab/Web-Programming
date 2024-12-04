@@ -1,81 +1,114 @@
 package com.example;
 
+import org.json.JSONObject;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-@WebServlet("/register")
+
 public class RegisterServlet extends HttpServlet {
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Retrieve form data
-        String username = request.getParameter("username");
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-        String firstname = request.getParameter("firstname");
-        String lastname = request.getParameter("lastname");
-        String birthdate = request.getParameter("birthdate");
-        String gender = request.getParameter("gender");
-        String afm = request.getParameter("afm");
-        String country = request.getParameter("country");
-        String address = request.getParameter("address");
-        String municipality = request.getParameter("municipality");
-        String prefecture = request.getParameter("prefecture");
-        String job = request.getParameter("job");
-        String telephone = request.getParameter("telephone");
-        String latitude = request.getParameter("latitude");
-        String longitude = request.getParameter("longitude");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
 
-        // Log received data for debugging
-        System.out.println("Received data: username=" + username + ", email=" + email);
+        try {
+            // Read JSON data
+            BufferedReader reader = request.getReader();
+            StringBuilder json = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                json.append(line);
+            }
 
-        // Database connection and insertion logic
-        try (Connection conn = DBConnection.getConnection()) {
-            String sql = "INSERT INTO users (username, email, password, firstname, lastname, birthdate, gender, afm, country, address, municipality, prefecture, job, telephone, lat, lon) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            // Parse JSON
+            JSONObject jsonObject = new JSONObject(json.toString());
+            String userType = jsonObject.getString("type");
 
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, username);
-                stmt.setString(2, email);
-                stmt.setString(3, password);
-                stmt.setString(4, firstname);
-                stmt.setString(5, lastname);
-                stmt.setString(6, birthdate);
-                stmt.setString(7, gender);
-                stmt.setString(8, afm);
-                stmt.setString(9, country);
-                stmt.setString(10, address);
-                stmt.setString(11, municipality);
-                stmt.setString(12, prefecture);
-                stmt.setString(13, job);
-                stmt.setString(14, telephone);
-                stmt.setDouble(15, Double.parseDouble(latitude));
-                stmt.setDouble(16, Double.parseDouble(longitude));
-
-                int rowsAffected = stmt.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    System.out.println("User registered successfully: " + username);
-
-                    // Send a success response
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"message\":\"Registration successful for user: " + username + "\"}");
-                } else {
-                    // Send a failure response
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    response.getWriter().write("{\"message\":\"Registration failed. Please try again.\"}");
-                }
+            // Decide based on userType
+            if ("simple".equals(userType)) {
+                saveSimpleUser(jsonObject);
+                out.write("{\"success\":true,\"message\":\"Simple user saved successfully.\"}");
+            } else if ("volunteer".equals(userType)) {
+                saveVolunteer(jsonObject);
+                out.write("{\"success\":true,\"message\":\"Volunteer saved successfully.\"}");
+            } else {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.write("{\"success\":false,\"message\":\"Invalid user type.\"}");
             }
         } catch (Exception e) {
-            // Handle errors
-            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"message\":\"An error occurred: " + e.getMessage() + "\"}");
+            out.write("{\"success\":false,\"message\":\"An error occurred: " + e.getMessage() + "\"}");
+            e.printStackTrace();
         }
     }
+
+    private void saveSimpleUser(JSONObject jsonObject) {
+        // Insert into `users` table
+        String query = "INSERT INTO users (username, email, password, firstname, lastname, birthdate, gender, afm, country, address, municipality, prefecture, job, telephone, lat, lon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, jsonObject.getString("username"));
+            stmt.setString(2, jsonObject.getString("email"));
+            stmt.setString(3, jsonObject.getString("password"));
+            stmt.setString(4, jsonObject.getString("firstname"));
+            stmt.setString(5, jsonObject.getString("lastname"));
+            stmt.setString(6, jsonObject.getString("birthdate"));
+            stmt.setString(7, jsonObject.getString("gender"));
+            stmt.setString(8, jsonObject.getString("afm"));
+            stmt.setString(9, jsonObject.getString("country"));
+            stmt.setString(10, jsonObject.getString("address"));
+            stmt.setString(11, jsonObject.getString("municipality"));
+            stmt.setString(12, jsonObject.getString("prefecture"));
+            stmt.setString(13, jsonObject.getString("job"));
+            stmt.setString(14, jsonObject.getString("telephone"));
+            stmt.setString(15, jsonObject.getString("latitude"));
+            stmt.setString(16, jsonObject.getString("longitude"));
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveVolunteer(JSONObject jsonObject) {
+        // Insert into `volunteers` table
+        String query = "INSERT INTO volunteers (username, email, password, firstname, lastname, birthdate, gender, afm, country, address, municipality, prefecture, job, telephone, lat, lon, volunteer_type, height, weight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, jsonObject.getString("username"));
+            stmt.setString(2, jsonObject.getString("email"));
+            stmt.setString(3, jsonObject.getString("password"));
+            stmt.setString(4, jsonObject.getString("firstname"));
+            stmt.setString(5, jsonObject.getString("lastname"));
+            stmt.setString(6, jsonObject.getString("birthdate"));
+            stmt.setString(7, jsonObject.getString("gender"));
+            stmt.setString(8, jsonObject.getString("afm"));
+            stmt.setString(9, jsonObject.getString("country"));
+            stmt.setString(10, jsonObject.getString("address"));
+            stmt.setString(11, jsonObject.getString("municipality"));
+            stmt.setString(12, jsonObject.getString("prefecture"));
+            stmt.setString(13, jsonObject.getString("job"));
+            stmt.setString(14, jsonObject.getString("telephone"));
+            stmt.setString(15, jsonObject.getString("latitude"));
+            stmt.setString(16, jsonObject.getString("longitude"));
+            stmt.setString(17, jsonObject.getString("volunteer_type"));
+            stmt.setString(18, jsonObject.getString("height"));
+            stmt.setString(19, jsonObject.getString("weight"));
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 }

@@ -14,6 +14,20 @@
     <url-pattern>/example</url-pattern>
   </servlet-mapping>
 
+  <!-- RegisterServlet -->
+  <servlet>
+    <servlet-name>RegisterServlet</servlet-name>
+    <servlet-class>com.example.RegisterServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RegisterServlet</servlet-name>
+    <url-pattern>/saveUser</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>RegisterServlet</servlet-name>
+    <url-pattern>/saveVolunteer</url-pattern>
+  </servlet-mapping>
+
   <!-- Session Configuration -->
   <session-config>
     <session-timeout>30</session-timeout>
