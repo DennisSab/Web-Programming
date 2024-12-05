@@ -291,3 +291,8 @@ document.getElementById('registrationForm').addEventListener('submit', async fun
     }
 
 });
+
+
+
+
+

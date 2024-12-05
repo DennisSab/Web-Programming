@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+</head>
+<body>
+<h1>User Profile</h1>
+
+<div id="userDetails">
+  <p>Username: <span id="username"></span></p>
+  <p>Email: <input id="email" type="email"></p>
+  <p>First Name: <input id="firstname" type="text"></p>
+  <p>Last Name: <input id="lastname" type="text"></p>
+  <p>Birthdate: <input id="birthdate" type="date"></p>
+  <p>Gender: <select id="gender">
+    <option value="male">Male</option>
+    <option value="female">Female</option>
+    <option value="other">Other</option>
+  </select></p>
+  <p>Country: <input id="country" type="text"></p>
+  <p>Address: <input id="address" type="text"></p>
+  <p>Municipality: <input id="municipality" type="text"></p>
+  <p>Prefecture: <input id="prefecture" type="text"></p>
+  <p>Job: <input id="job" type="text"></p>
+  <p>Telephone: <span id="telephone"></span></p>
+  <p>AFM: <span id="afm"></span></p>
+  <p>Latitude: <input id="latitude" type="text"></p>
+  <p>Longitude: <input id="longitude" type="text"></p>
+</div>
+
+<!-- Save Changes Button -->
+<button id="saveChangesButton">Save Changes</button>
+
+
+<!-- Logout button -->
+<button id="logoutButton">Logout</button>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async function () {
+    // Fetch user details from the server
+    try {
+      const response = await fetch("/A3_4739/getUserDetails");
+      const data = await response.json();
+
+      if (data.success) {
+        // Populate user details
+        document.getElementById("username").innerText = data.username;
+        document.getElementById("email").innerText = data.email;
+        document.getElementById("firstname").innerText = data.firstname;
+        document.getElementById("lastname").innerText = data.lastname;
+        document.getElementById("birthdate").innerText = data.birthdate;
+        document.getElementById("gender").innerText = data.gender;
+        document.getElementById("afm").innerText = data.afm;
+        document.getElementById("country").innerText = data.country;
+        document.getElementById("address").innerText = data.address;
+        document.getElementById("municipality").innerText = data.municipality;
+        document.getElementById("prefecture").innerText = data.prefecture;
+        document.getElementById("job").innerText = data.job;
+        document.getElementById("telephone").innerText = data.telephone;
+        document.getElementById("latitude").innerText = data.latitude;
+        document.getElementById("longitude").innerText = data.longitude;
+      } else {
+        console.error("Failed to fetch user details:", data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+
+    // Logout logic
+    document.getElementById("logoutButton").addEventListener("click", async () => {
+      try {
+        const response = await fetch("/A3_4739/logout", { method: "POST" });
+        if (response.ok) {
+          window.location.href = "/A3_4739/login.html";
+        }
+      } catch (error) {
+        console.error("Error during logout:", error);
+      }
+    });
+  });
+</script>
+
+<script>
+  document.getElementById("saveChangesButton").addEventListener("click", async () => {
+    const updatedDetails = {
+      email: document.getElementById("email").value,
+      firstname: document.getElementById("firstname").value,
+      lastname: document.getElementById("lastname").value,
+      birthdate: document.getElementById("birthdate").value,
+      gender: document.getElementById("gender").value,
+      country: document.getElementById("country").value,
+      address: document.getElementById("address").value,
+      municipality: document.getElementById("municipality").value,
+      prefecture: document.getElementById("prefecture").value,
+      job: document.getElementById("job").value,
+      latitude: document.getElementById("latitude").value,
+      longitude: document.getElementById("longitude").value,
+    };
+
+    try {
+      const response = await fetch("/A3_4739/updateUserDetails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedDetails),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Profile updated successfully!");
+      } else {
+        alert(`Failed to update profile: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  });
+</script>
+
+</body>
+</html>
