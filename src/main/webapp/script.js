@@ -250,7 +250,7 @@ document.getElementById('verifyAddress').addEventListener('click', function() {
 });
 
 
-document.getElementById('registrationForm').addEventListener('submit', function (event) {
+document.getElementById('registrationForm').addEventListener('submit', async function (event) {
     event.preventDefault(); // Prevent the default form submission behavior
 
     const formData = new FormData(this);
@@ -263,32 +263,31 @@ document.getElementById('registrationForm').addEventListener('submit', function 
         jsonData[key] = value;
     });
 
-    // Make the AJAX request
-    fetch(targetURL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(jsonData), // Send data as JSON
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                alert('Registration successful!');
-                // Optionally clear the form
-                document.getElementById('registrationForm').reset();
-            } else {
-                alert(`Error: ${data.message}`);
-            }
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-            alert('An error occurred while processing the registration.');
+    try {
+        const response = await fetch(targetURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(jsonData),
         });
-});
 
+        let data;
+        try {
+            data = await response.json(); // Parse JSON response
+        } catch (err) {
+            console.error('Response is not JSON:', err);
+            throw new Error('The server response is not valid JSON.');
+        }
+
+        if (response.ok && data.success) {
+            window.location.href = `/A3_4739/success.html?message=${encodeURIComponent(data.message)}`;
+        } else {
+            window.location.href = `/A3_4739/error.html?message=${encodeURIComponent(data.message || 'An error occurred.')}`;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        window.location.href = `/A3_4739/error.html?message=${encodeURIComponent('An unexpected error occurred.')}`;
+    }
+
+});

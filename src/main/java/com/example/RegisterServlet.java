@@ -12,17 +12,19 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
-
+@WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
 
         try {
-            // Read JSON data
+            // Read JSON data from the request
             BufferedReader reader = request.getReader();
             StringBuilder json = new StringBuilder();
             String line;
@@ -34,29 +36,79 @@ public class RegisterServlet extends HttpServlet {
             JSONObject jsonObject = new JSONObject(json.toString());
             String userType = jsonObject.getString("type");
 
-            // Decide based on userType
+            // Check for duplicates before inserting
+            if (isDuplicate("username", jsonObject.getString("username"))) {
+                response.setStatus(HttpServletResponse.SC_CONFLICT);
+                out.write("{\"success\":false,\"message\":\"Username already exists.\"}");
+                return;
+            }
+            if (isDuplicate("email", jsonObject.getString("email"))) {
+                response.setStatus(HttpServletResponse.SC_CONFLICT);
+                out.write("{\"success\":false,\"message\":\"Email already exists.\"}");
+                return;
+            }
+            if (isDuplicate("telephone", jsonObject.getString("telephone"))) {
+                response.setStatus(HttpServletResponse.SC_CONFLICT);
+                out.write("{\"success\":false,\"message\":\"Telephone already exists.\"}");
+                return;
+            }
+
+            // Insert based on user type
+            boolean isSuccess = false;
+            String successMessage = "";
             if ("simple".equals(userType)) {
-                saveSimpleUser(jsonObject);
-                out.write("{\"success\":true,\"message\":\"Simple user saved successfully.\"}");
+                isSuccess = saveSimpleUser(jsonObject);
+                successMessage = "Simple user registered successfully.";
             } else if ("volunteer".equals(userType)) {
-                saveVolunteer(jsonObject);
-                out.write("{\"success\":true,\"message\":\"Volunteer saved successfully.\"}");
+                isSuccess = saveVolunteer(jsonObject);
+                successMessage = "Volunteer registered successfully.";
             } else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 out.write("{\"success\":false,\"message\":\"Invalid user type.\"}");
+                return;
             }
+
+            // Respond based on success
+            if (isSuccess) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                out.write("{\"success\":true,\"message\":\"" + successMessage + "\"}");
+            } else {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                out.write("{\"success\":false,\"message\":\"Failed to save the user.\"}");
+            }
+
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.write("{\"success\":false,\"message\":\"An error occurred: " + e.getMessage() + "\"}");
+            out.write("{\"success\":false,\"message\":\"An unexpected error occurred: " + e.getMessage() + "\"}");
             e.printStackTrace();
         }
     }
 
-    private void saveSimpleUser(JSONObject jsonObject) {
-        // Insert into `users` table
+    private boolean isDuplicate(String field, String value) throws SQLException {
+        String query = "SELECT COUNT(*) FROM users WHERE " + field + " = ? UNION SELECT COUNT(*) FROM volunteers WHERE " + field + " = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, value);
+            stmt.setString(2, value);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    if (rs.getInt(1) > 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean saveSimpleUser(JSONObject jsonObject) throws SQLException {
         String query = "INSERT INTO users (username, email, password, firstname, lastname, birthdate, gender, afm, country, address, municipality, prefecture, job, telephone, lat, lon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Debugging input
+            System.out.println("Inserting user with username: " + jsonObject.getString("username"));
+
             stmt.setString(1, jsonObject.getString("username"));
             stmt.setString(2, jsonObject.getString("email"));
             stmt.setString(3, jsonObject.getString("password"));
@@ -73,14 +125,20 @@ public class RegisterServlet extends HttpServlet {
             stmt.setString(14, jsonObject.getString("telephone"));
             stmt.setString(15, jsonObject.getString("latitude"));
             stmt.setString(16, jsonObject.getString("longitude"));
-            stmt.executeUpdate();
+
+            // Execute query
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println("Rows affected: " + rowsAffected);
+
+            return rowsAffected > 0;
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Error during user insertion: " + e.getMessage());
+            throw e;
         }
     }
 
-    private void saveVolunteer(JSONObject jsonObject) {
-        // Insert into `volunteers` table
+    private boolean saveVolunteer(JSONObject jsonObject) throws SQLException {
         String query = "INSERT INTO volunteers (username, email, password, firstname, lastname, birthdate, gender, afm, country, address, municipality, prefecture, job, telephone, lat, lon, volunteer_type, height, weight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -104,11 +162,10 @@ public class RegisterServlet extends HttpServlet {
             stmt.setString(18, jsonObject.getString("height"));
             stmt.setString(19, jsonObject.getString("weight"));
             stmt.executeUpdate();
+            return true; // Return true if successful
         } catch (SQLException e) {
             e.printStackTrace();
+            return false; // Return false if there is a SQL exception
         }
     }
-
-
-
 }

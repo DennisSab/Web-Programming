@@ -19,9 +19,12 @@ public class DBConnection {
         }
     }
 
-    // Method to get a connection
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+        Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+        connection.setAutoCommit(true); // Ensure auto-commit is enabled by default
+        System.out.println("Database connection established to: " + URL);
+        return connection;
     }
+
 }
 
