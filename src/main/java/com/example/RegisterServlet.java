@@ -56,7 +56,7 @@ public class RegisterServlet extends HttpServlet {
             // Insert based on user type
             boolean isSuccess = false;
             String successMessage = "";
-            if ("simple".equals(userType)) {
+            if ("user".equals(userType)) {
                 isSuccess = saveSimpleUser(jsonObject);
                 successMessage = "Simple user registered successfully.";
             } else if ("volunteer".equals(userType)) {
