@@ -24,7 +24,6 @@ public class RegisterServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try {
-            // Read JSON data from the request
             BufferedReader reader = request.getReader();
             StringBuilder json = new StringBuilder();
             String line;
@@ -32,11 +31,9 @@ public class RegisterServlet extends HttpServlet {
                 json.append(line);
             }
 
-            // Parse JSON
             JSONObject jsonObject = new JSONObject(json.toString());
             String userType = jsonObject.getString("type");
 
-            // Check for duplicates before inserting
             if (isDuplicate("username", jsonObject.getString("username"))) {
                 response.setStatus(HttpServletResponse.SC_CONFLICT);
                 out.write("{\"success\":false,\"message\":\"Username already exists.\"}");
@@ -53,10 +50,9 @@ public class RegisterServlet extends HttpServlet {
                 return;
             }
 
-            // Insert based on user type
             boolean isSuccess = false;
             String successMessage = "";
-            if ("simple".equals(userType)) {
+            if ("user".equals(userType)) {
                 isSuccess = saveSimpleUser(jsonObject);
                 successMessage = "Simple user registered successfully.";
             } else if ("volunteer".equals(userType)) {
@@ -68,7 +64,6 @@ public class RegisterServlet extends HttpServlet {
                 return;
             }
 
-            // Respond based on success
             if (isSuccess) {
                 response.setStatus(HttpServletResponse.SC_OK);
                 out.write("{\"success\":true,\"message\":\"" + successMessage + "\"}");
@@ -106,9 +101,7 @@ public class RegisterServlet extends HttpServlet {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            // Debugging input
             System.out.println("Inserting user with username: " + jsonObject.getString("username"));
-
             stmt.setString(1, jsonObject.getString("username"));
             stmt.setString(2, jsonObject.getString("email"));
             stmt.setString(3, jsonObject.getString("password"));
@@ -126,10 +119,8 @@ public class RegisterServlet extends HttpServlet {
             stmt.setString(15, jsonObject.getString("latitude"));
             stmt.setString(16, jsonObject.getString("longitude"));
 
-            // Execute query
             int rowsAffected = stmt.executeUpdate();
             System.out.println("Rows affected: " + rowsAffected);
-
             return rowsAffected > 0;
 
         } catch (SQLException e) {
@@ -162,10 +153,10 @@ public class RegisterServlet extends HttpServlet {
             stmt.setString(18, jsonObject.getString("height"));
             stmt.setString(19, jsonObject.getString("weight"));
             stmt.executeUpdate();
-            return true; // Return true if successful
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false; // Return false if there is a SQL exception
+            return false;
         }
     }
 }

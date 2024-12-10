@@ -1,26 +1,24 @@
 package com.example;
 
-import org.json.JSONObject; // For creating JSON responses
-import javax.servlet.ServletException; // For handling servlets
-import javax.servlet.annotation.WebServlet; // For mapping the servlet to a URL
-import javax.servlet.http.HttpServlet; // Base class for HTTP servlets
-import javax.servlet.http.HttpServletRequest; // For handling HTTP requests
-import javax.servlet.http.HttpServletResponse; // For handling HTTP responses
-import javax.servlet.http.HttpSession; // For session management
-import java.io.IOException; // For input/output operations
-import java.io.PrintWriter; // For writing responses
-import java.sql.Connection; // For managing database connections
-import java.sql.PreparedStatement; // For executing SQL queries
-import java.sql.ResultSet; // For processing SQL query results
-import java.sql.SQLException; // For handling SQL exceptions
-
+import org.json.JSONObject;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @WebServlet("/getUserDetails")
 public class GetUserDetailsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
-        HttpSession session = request.getSession(false); // Get the session, but don't create a new one
+        HttpSession session = request.getSession(false);
         PrintWriter out = response.getWriter();
 
         if (session == null) {
@@ -38,7 +36,7 @@ public class GetUserDetailsServlet extends HttpServlet {
             return;
         }
 
-        System.out.println("Retrieved username: " + username);
+        //System.out.println("Retrieved username: " + username);
 
         try (Connection conn = DBConnection.getConnection()) {
             String query = "SELECT * FROM users WHERE username = ?";
@@ -48,7 +46,6 @@ public class GetUserDetailsServlet extends HttpServlet {
 
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
-                        // Return all user details as JSON
                         JSONObject userDetails = new JSONObject();
                         userDetails.put("success", true);
                         userDetails.put("username", rs.getString("username"));
@@ -68,12 +65,10 @@ public class GetUserDetailsServlet extends HttpServlet {
                         userDetails.put("longitude", rs.getString("lon"));
 
                         out.write(userDetails.toString());
-                        return;
                     } else {
                         System.out.println("No user found with username: " + username);
                         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                         out.write("{\"success\":false,\"message\":\"User not found.\"}");
-                        return;
                     }
                 }
             }
@@ -82,7 +77,6 @@ public class GetUserDetailsServlet extends HttpServlet {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.write("{\"success\":false,\"message\":\"Database error occurred.\"}");
-            return;
         }
     }
 }

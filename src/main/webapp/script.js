@@ -1,4 +1,3 @@
-// Display or hide volunteer fields based on user type selection
 document.getElementById('type').addEventListener('change', function() {
     const volunteerFields = document.getElementById('volunteerFields');
     const termsText = document.getElementById('termsText');
@@ -6,27 +5,21 @@ document.getElementById('type').addEventListener('change', function() {
     const weightField = document.getElementById('weight'); // Get the weight field
 
     if (this.value === 'volunteer') {
-        // Show volunteer fields
         volunteerFields.style.display = 'block';
 
-        // Add "required" attributes to height and weight fields
         heightField.setAttribute('required', 'required');
         weightField.setAttribute('required', 'required');
 
-        // Update the terms text for volunteers
         termsText.innerHTML = `
             Απαγορεύεται η άσκοπη χρήση της εφαρμογής. Συμφωνώ πως η άσκοπη χρήση της θα διώκεται ποινικά.
             Δηλώνω υπεύθυνα ότι ανήκω στο ενεργό δυναμικό των εθελοντών πυροσβεστών.
         `;
     } else {
-        // Hide volunteer fields
         volunteerFields.style.display = 'none';
 
-        // Remove "required" attributes from height and weight fields
         heightField.removeAttribute('required');
         weightField.removeAttribute('required');
 
-        // Update the terms text for regular users
         termsText.innerHTML = `
             Απαγορεύεται η άσκοπη χρήση της εφαρμογής. Συμφωνώ πως η άσκοπη χρήση της θα διώκεται ποινικά.
         `;
@@ -55,18 +48,15 @@ document.getElementById('checkStrength').addEventListener('click', function() {
 
 // Function to check password strength
 function checkPasswordStrength(password) {
-    // Prohibited sequences
     const prohibitedSequences = ["fire", "fotia", "ethelontis", "volunteer"];
     const lowercasePassword = password.toLowerCase();
 
-    // Check for prohibited sequences
     for (const sequence of prohibitedSequences) {
         if (lowercasePassword.includes(sequence)) {
             return "weak";
         }
     }
 
-    // Count numbers and repeated characters
     let numCount = 0;
     let charCount = {};
     for (let i = 0; i < password.length; i++) {
@@ -77,19 +67,16 @@ function checkPasswordStrength(password) {
         charCount[char] = (charCount[char] || 0) + 1;
     }
 
-    // Check if more than 50% of password is numbers
     if (numCount / password.length >= 0.5) {
         return "weak";
     }
 
-    // Check if more than 50% of password is the same character
     for (const count of Object.values(charCount)) {
         if (count / password.length >= 0.5) {
             return "weak";
         }
     }
 
-    // Check if password contains at least 1 uppercase, 1 lowercase, 1 number, and 1 symbol
     const hasUppercase = /[A-Z]/.test(password);
     const hasLowercase = /[a-z]/.test(password);
     const hasNumber = /\d/.test(password);
@@ -99,25 +86,22 @@ function checkPasswordStrength(password) {
         return "strong";
     }
 
-    // If it doesn't match any weak or strong criteria, it is medium
     return "medium";
 }
 
-
-// Address Verification Setup
 let isAddressVerified = false;
 let latitude = '';
 let longitude = '';
 
-
+//VERIFY ADDRESS FUNCTION
 document.getElementById('verifyAddress').addEventListener('click', function() {
     isAddressVerified = false;
     latitude = '';
     longitude = '';
     document.getElementById('latitude').value = '';
     document.getElementById('longitude').value = '';
-    document.getElementById('displayMapButton').style.display = 'none'; // Hide map button initially
-    document.getElementById('mapContainer').style.display = 'none'; // Hide map container
+    document.getElementById('displayMapButton').style.display = 'none';
+    document.getElementById('mapContainer').style.display = 'none';
 
     const countrySelect = document.getElementById('country');
     const country = countrySelect.options[countrySelect.selectedIndex].text.trim();
@@ -190,10 +174,8 @@ document.getElementById('displayMapButton').addEventListener('click', function()
     displayMap(latitude, longitude);
 });
 
-
-
-let map; // Define map as a global variable
-
+let map;
+//FUNCTION TO DISPLAY THE MAP
 function displayMap(lat, lon) {
     console.log("Displaying map with coordinates:", lat, lon);
 
@@ -235,10 +217,6 @@ function displayMap(lat, lon) {
     console.log("Map initialized at:", lat, lon);
 }
 
-
-
-
-
 // Show or hide the map button based on address verification
 document.getElementById('verifyAddress').addEventListener('click', function() {
     if (isAddressVerified) {
@@ -249,20 +227,19 @@ document.getElementById('verifyAddress').addEventListener('click', function() {
     }
 });
 
-
 document.getElementById('registrationForm').addEventListener('submit', async function (event) {
-    event.preventDefault(); // Prevent the default form submission behavior
+    event.preventDefault();
 
     const formData = new FormData(this);
-    const userType = formData.get('type'); // Get the selected user type
-    const targetURL = userType === 'volunteer' ? '/A3_4739/saveVolunteer' : '/A3_4739/saveUser'; // Decide the endpoint based on the type
+    const userType = formData.get('type');
+    const targetURL = userType === 'volunteer' ? '/A3_4739/saveVolunteer' : '/A3_4739/saveUser';
 
-    // Convert formData to a JSON object
     const jsonData = {};
     formData.forEach((value, key) => {
         jsonData[key] = value;
     });
 
+    //AJAX REQUEST
     try {
         const response = await fetch(targetURL, {
             method: 'POST',
@@ -274,7 +251,7 @@ document.getElementById('registrationForm').addEventListener('submit', async fun
 
         let data;
         try {
-            data = await response.json(); // Parse JSON response
+            data = await response.json();
         } catch (err) {
             console.error('Response is not JSON:', err);
             throw new Error('The server response is not valid JSON.');

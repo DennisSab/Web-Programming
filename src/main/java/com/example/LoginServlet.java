@@ -30,7 +30,7 @@ public class LoginServlet extends HttpServlet {
 
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                // Create a session for the user
+
                 HttpSession session = request.getSession();
                 session.setAttribute("user_id", rs.getInt("user_id"));
                 session.setAttribute("username", rs.getString("username"));
@@ -38,7 +38,9 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("lastname", rs.getString("lastname"));
                 session.setMaxInactiveInterval(30 * 60); // Session timeout in seconds (30 minutes)
 
+                response.sendRedirect("profile.html");
                 out.write("{\"success\":true,\"message\":\"Login successful\"}");
+
             } else {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 out.write("{\"success\":false,\"message\":\"Invalid username or password\"}");

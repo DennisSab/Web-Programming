@@ -11,16 +11,13 @@ import java.io.IOException;
 @WebServlet("/logout")
 public class LogoutServlet extends HttpServlet {
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Get the current session, if it exists
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws  IOException {
         HttpSession session = request.getSession(false);
 
         if (session != null) {
-            // Invalidate the session
             session.invalidate();
         }
 
-        // Respond with success
         response.setContentType("application/json");
         response.getWriter().write("{\"success\":true,\"message\":\"Logged out successfully.\"}");
     }

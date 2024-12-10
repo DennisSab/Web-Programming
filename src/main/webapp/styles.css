@@ -1,31 +1,27 @@
-/* Background and font settings */
 body {
     font-family: Arial, sans-serif;
-    background-color: #e0f7fa; /* Ελαφρύ γαλάζιο χρώμα για το background */
+    background-color: #e0f7fa;
     margin: 0;
     padding: 20px;
 }
 
-/* Form container styling */
 .form-container {
     max-width: 600px;
     margin: 0 auto;
-    background-color: #ffffff; /* Λευκό χρώμα για το πλαίσιο */
+    background-color: #ffffff;
     padding: 30px;
-    border-radius: 10px; /* Προσθέτει στρογγυλεμένες γωνίες */
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); /* Προσθέτει πιο εμφανή σκιά */
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
 }
 
-/* Title styling */
 h2 {
     text-align: center;
-    color: #00695c; /* Σκούρο πράσινο */
+    color: #00695c;
     font-weight: bold;
     margin-bottom: 20px;
 }
 
-/* Form input and label styling */
 .form-group {
     margin-bottom: 15px;
 }
@@ -34,17 +30,16 @@ label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
-    color: #00796b; /* Πράσινο-μπλε χρώμα */
+    color: #00796b;
 }
-
 input, select, textarea {
     width: calc(100% - 20px);
     padding: 10px;
     font-size: 16px;
-    border: 1px solid #b2dfdb; /* Απαλό πράσινο περίγραμμα */
+    border: 1px solid #b2dfdb;
     border-radius: 4px;
     box-sizing: border-box;
-    background-color: #e0f2f1; /* Ελαφρύ πράσινο φόντο στα input πεδία */
+    background-color: #e0f2f1;
 }
 
 input[type="radio"], input[type="checkbox"] {
@@ -52,35 +47,31 @@ input[type="radio"], input[type="checkbox"] {
     margin-right: 5px;
 }
 
-/* Button styling */
 button {
     width: 100%;
     padding: 12px;
-    background-color: #00796b; /* Πράσινο-μπλε χρώμα για το κουμπί */
+    background-color: #00796b;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s ease; /* Ομαλή μετάβαση στο hover */
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #004d40; /* Πιο σκούρο πράσινο στο hover */
+    background-color: #004d40;
 }
 
-/* Terms text styling */
 .terms {
     font-size: 12px;
-    color: #555; /* Γκρι χρώμα για το κείμενο */
+    color: #555;
 }
 
-/* Form group with radio and checkbox alignment */
 input[type="radio"], input[type="checkbox"] {
     margin-left: 10px;
 }
 
-/* Password container styling for horizontal layout */
 .password-container {
     display: flex;
     align-items: center;
@@ -91,22 +82,21 @@ input[type="radio"], input[type="checkbox"] {
 }
 
 .password-container button {
-    width: auto; /* Override the default width */
-    padding: 8px; /* Adjust padding for smaller button */
-    background-color: #00796b; /* Same color as other buttons */
+    width: auto;
+    padding: 8px;
+    background-color: #00796b;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 12px;
-    margin-left: 5px; /* Space between input and button */
+    margin-left: 5px;
     transition: background-color 0.3s ease;
 }
 
 .password-container button:hover {
-    background-color: #004d40; /* Darker on hover */
+    background-color: #004d40;
 }
-
 
 .map-marker {
     background-color: red;

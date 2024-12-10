@@ -1,7 +1,6 @@
 package com.example;
 
 import org.json.JSONObject;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,8 +26,6 @@ public class UpdateUserDetailsServlet extends HttpServlet {
         }
 
             String username = (String) session.getAttribute("username");
-
-            // Read the JSON data from the request
             StringBuilder json = new StringBuilder();
             BufferedReader reader = request.getReader();
             String line;
@@ -39,7 +36,6 @@ public class UpdateUserDetailsServlet extends HttpServlet {
             JSONObject jsonObject = new JSONObject(json.toString());
 
             try (Connection conn = DBConnection.getConnection()) {
-                // Update query
                 String query = "UPDATE users SET email = ?, firstname = ?, lastname = ?, birthdate = ?, gender = ?, country = ?, address = ?, municipality = ?, prefecture = ?, job = ?, lat = ?, lon = ? WHERE username = ?";
                 try (PreparedStatement stmt = conn.prepareStatement(query)) {
                     stmt.setString(1, jsonObject.getString("email"));
