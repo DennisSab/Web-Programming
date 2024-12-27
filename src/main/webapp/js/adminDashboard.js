@@ -247,3 +247,64 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+
+
+async function fetchVolunteerRequests() {
+    try {
+        // Fetch the list of volunteer requests from the backend
+        const response = await fetch('/A3_4739/admin/volunteerRequests');
+        const requests = await response.json();
+
+        // Get the container where requests will be displayed
+        const container = document.getElementById('volunteerRequestsContainer');
+        container.innerHTML = ''; // Clear the container
+
+        // Loop through the requests and render each one
+        requests.forEach((req) => {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <p>Incident ID: ${req.incident_id}</p>
+                <p>Volunteer ID: ${req.volunteer_id}</p>
+                <p>Position: ${req.position_type}</p>
+                <p>Status: ${req.status}</p>
+                ${
+                req.status === 'pending'
+                    ? `<button onclick="updateRequest(${req.id}, 'approved')">Approve</button>
+                           <button onclick="updateRequest(${req.id}, 'rejected')">Reject</button>`
+                    : ''
+            }
+            `;
+            container.appendChild(div);
+        });
+    } catch (error) {
+        console.error('Error fetching volunteer requests:', error);
+        alert('Failed to fetch volunteer requests. Please try again later.');
+    }
+}
+
+
+async function updateRequest(requestId, newStatus) {
+    try {
+        const response = await fetch('/A3_4739/admin/volunteerRequests/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id:requestId, status: newStatus }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert('Request updated successfully!');
+            fetchVolunteerRequests(); // Reload requests
+        } else {
+            alert(`Error: ${result.message}`);
+        }
+    } catch (error) {
+        console.error('Error updating request:', error);
+        alert('Server error. Please try again.');
+    }
+}
+
+
+fetchVolunteerRequests();

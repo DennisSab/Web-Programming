@@ -200,4 +200,96 @@ public class EditVolunteerPositionsTable {
         con.close();
     }
 
+    public VolunteerPosition getVolunteerPosition(int incidentId, String positionType) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            String query = "SELECT * FROM volunteer_positions WHERE incident_id = ? AND position_type = ?";
+            stmt = con.prepareStatement(query);
+            stmt.setInt(1, incidentId);
+            stmt.setString(2, positionType);
+
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                VolunteerPosition position = new VolunteerPosition();
+                position.setId(rs.getInt("id"));
+                position.setIncidentId(rs.getInt("incident_id"));
+                position.setPositionType(rs.getString("position_type"));
+                position.setSlotsOpen(rs.getInt("slots_open"));
+                position.setSlotsFilled(rs.getInt("slots_filled"));
+                return position;
+            }
+        } finally {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (con != null) con.close();
+        }
+        return null; // Return null if no position found
+    }
+
+    public void incrementSlotsFilled(int incidentId, String positionType) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        PreparedStatement stmt = null;
+
+        try {
+            String query = "UPDATE volunteer_positions SET slots_filled = slots_filled + 1 WHERE incident_id = ? AND position_type = ?";
+            stmt = con.prepareStatement(query);
+            stmt.setInt(1, incidentId);
+            stmt.setString(2, positionType);
+
+            stmt.executeUpdate();
+        } finally {
+            if (stmt != null) stmt.close();
+            if (con != null) con.close();
+        }
+    }
+
+
+    public boolean isPositionAvailable(int incidentId, String positionType) {
+        try (Connection con = DB_Connection.getConnection()) {
+            String query = "SELECT slots_open, slots_filled FROM volunteer_positions WHERE incident_id = ? AND position_type = ?";
+            try (PreparedStatement pst = con.prepareStatement(query)) {
+                pst.setInt(1, incidentId);
+                pst.setString(2, positionType);
+
+                try (ResultSet rs = pst.executeQuery()) {
+                    if (rs.next()) {
+                        int slotsOpen = rs.getInt("slots_open");
+                        int slotsFilled = rs.getInt("slots_filled");
+
+                        // Check if there are still available slots
+                        return slotsFilled < slotsOpen;
+                    }
+                }
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return false; // Return false if the position doesn't exist or if an error occurs
+    }
+
+    public boolean hasAvailablePositions(int incidentId, String positionType) throws SQLException, ClassNotFoundException {
+        Connection con = DB_Connection.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            String query = "SELECT * FROM volunteer_positions WHERE incident_id = ? AND position_type = ? AND slots_filled < slots_open";
+            stmt = con.prepareStatement(query);
+            stmt.setInt(1, incidentId);
+            stmt.setString(2, positionType);
+
+            rs = stmt.executeQuery();
+            return rs.next(); // If a row exists, then a position is available
+        } finally {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (con != null) con.close();
+        }
+    }
+
+
+
 }

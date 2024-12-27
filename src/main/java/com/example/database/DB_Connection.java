@@ -1,5 +1,6 @@
 package com.example.database;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.sql.*;
@@ -55,10 +56,29 @@ public class DB_Connection {
         }
         return object.toString();
     }
-     
-     
-        
-     public static JsonObject getResultsToJSONObject(ResultSet rs) throws SQLException {
+
+    public static String getResultsToJSONArray(ResultSet rs) throws SQLException {
+        JsonArray jsonArray = new JsonArray();
+        ResultSetMetaData metadata = rs.getMetaData();
+        int columnCount = metadata.getColumnCount();
+
+        while (rs.next()) {
+            JsonObject jsonObject = new JsonObject();
+            for (int i = 1; i <= columnCount; i++) {
+                String columnName = metadata.getColumnName(i);
+                String value = rs.getString(i);
+                jsonObject.addProperty(columnName, value != null ? value : "");
+            }
+            jsonArray.add(jsonObject);
+        }
+
+        return jsonArray.toString();
+    }
+
+
+
+
+    public static JsonObject getResultsToJSONObject(ResultSet rs) throws SQLException {
        ResultSetMetaData metadata = rs.getMetaData();
         int columnCount = metadata.getColumnCount();
           JsonObject object = new JsonObject();
