@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <script src="js/logout.js"></script>
-    <script src="js/adminDashboard.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
 <div class="dashboard">
@@ -92,11 +92,49 @@
     <div id="volunteerRequestsContainer"></div>
 
 
+    <h3>Available Incidents</h3>
+    <table id="incidentTable" border="1">
+        <thead>
+        <tr>
+            <th>Incident ID</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Populated dynamically by JavaScript -->
+        </tbody>
+    </table>
+
+    <h3>Selected Incident</h3>
+    <input type="text" id="selectedIncidentId" placeholder="Enter or select an Incident ID" readonly>
+
+    <!-- Send a Message -->
+    <h3>Send a Message</h3>
+    <textarea id="messageText" placeholder="Type your message"></textarea><br>
+    <label for="recipient">Recipient:</label>
+    <select id="recipient">
+        <option value="public">Public</option>
+        <option value="volunteers">Volunteers</option>
+    </select><br>
+    <button id="sendMessageButton" onclick="sendMessage()">Send</button>
+
+    <!-- Display Messages -->
+    <h3>Messages for Incident</h3>
+    <div id="messagesForIncident"></div>
+
+    <!-- Stats pie charts -->
+    <h3>Statistics</h3>
+    <div id="piechart" style="width: 900px; height: 500px;"></div>
+    <div id="usersVolunteersChart" style="width: 900px; height: 500px;"></div>
+    <div id="barchart_vehicles_firemen" style="width: 900px; height: 500px;"></div>
+
+
     <!-- STEP 3: Logout Button -->
     <div class="logout">
         <button onclick="logout()">Logout</button>
     </div>
 </div>
 
+<script src="js/adminDashboard.js"></script>
 </body>
 </html>

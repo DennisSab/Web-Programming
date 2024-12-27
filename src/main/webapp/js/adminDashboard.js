@@ -139,8 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         formData.forEach((value, key) => {
             // Trim all incoming values
-            const trimmedVal = value.trim();
-            incidentData[key] = trimmedVal;
+            incidentData[key] = value.trim();
         });
 
         // If you have numeric fields, parse them:
@@ -305,6 +304,206 @@ async function updateRequest(requestId, newStatus) {
         alert('Server error. Please try again.');
     }
 }
-
-
 fetchVolunteerRequests();
+
+
+async function populateIncidentTable() {
+    try {
+        const response = await fetch('/A3_4739/incidents/ids');
+        if (!response.ok) throw new Error('Failed to fetch incident IDs.');
+        const incidentIds = await response.json();
+
+        const tableBody = document.getElementById('incidentTable').querySelector('tbody');
+        tableBody.innerHTML = ''; // Clear existing rows
+
+        incidentIds.forEach((id) => {
+            const row = document.createElement('tr');
+
+            const idCell = document.createElement('td');
+            idCell.textContent = id;
+
+            const actionCell = document.createElement('td');
+            const selectButton = document.createElement('button');
+            selectButton.textContent = 'Select';
+            selectButton.addEventListener('click', () => {
+                document.getElementById('selectedIncidentId').value = id;
+                fetchMessages(); // Fetch messages for the selected incident
+            });
+
+            actionCell.appendChild(selectButton);
+            row.appendChild(idCell);
+            row.appendChild(actionCell);
+
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error fetching incident IDs:', error);
+        alert('Failed to load incident IDs. Please try again later.');
+    }
+}
+
+
+async function fetchMessages() {
+    const incidentId = document.getElementById('selectedIncidentId').value;
+    if (!incidentId) {
+        document.getElementById('messagesForIncident').innerHTML = '<p>Select an incident to view messages.</p>';
+        return;
+    }
+
+    try {
+        const response = await fetch(`/A3_4739/messages/get?incident_id=${incidentId}`);
+        if (!response.ok) throw new Error('Failed to fetch messages.');
+
+        const messages = await response.json();
+        displayMessages(messages);
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        alert('Failed to load messages. Please try again later.');
+    }
+}
+
+
+function displayMessages(messages) {
+    const container = document.getElementById('messagesForIncident');
+    container.innerHTML = ''; // Clear previous messages
+
+    if (messages.length === 0) {
+        container.innerHTML = '<p>No messages for this incident.</p>';
+        return;
+    }
+
+    messages.forEach((msg) => {
+        const div = document.createElement('div');
+        div.textContent = `[${msg.date_time}] ${msg.sender} -> ${msg.recipient}: ${msg.message}`;
+        container.appendChild(div);
+    });
+}
+
+async function sendMessage() {
+    const incidentId = document.getElementById('selectedIncidentId').value;
+    const messageText = document.getElementById('messageText').value.trim();
+    const recipient = document.getElementById('recipient').value;
+
+    if (!incidentId || !messageText) {
+        alert('Incident and message text are required.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/A3_4739/messages/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                incident_id: parseInt(incidentId),
+                sender: 'admin', // Adjust as needed
+                recipient,
+                message: messageText,
+            }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert('Message sent successfully!');
+            fetchMessages(); // Refresh messages
+            document.getElementById('messageText').value = ''; // Clear the text area
+        } else {
+            alert('Error sending message: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error sending message:', error);
+        alert('Server error. Please try again.');
+    }
+}
+
+
+window.onload = function () {
+    populateIncidentTable();
+};
+
+
+google.charts.load('current', { packages: ['corechart', 'bar'] });
+google.charts.setOnLoadCallback(drawCharts);
+
+async function drawCharts() {
+    await drawIncidentsByTypeChart();
+    await drawVehiclesFiremenChart();
+}
+
+// 1. Incidents by Type
+async function drawIncidentsByTypeChart() {
+    try {
+        const response = await fetch('/A3_4739/statistics/incidentsByType');
+        if (!response.ok) throw new Error('Failed to fetch incidents by type.');
+        const data = await response.json();
+
+        const chartData = [['Incident Type', 'Count']];
+        data.forEach(row => {
+            chartData.push([row.incident_type, row.count]);
+        });
+
+        const googleData = google.visualization.arrayToDataTable(chartData);
+        const options = { title: 'Incidents by Type', is3D: true };
+        const chart = new google.visualization.PieChart(document.getElementById('piechart'));
+        chart.draw(googleData, options);
+    } catch (error) {
+        console.error('Error drawing incidents by type chart:', error);
+    }
+}
+
+// 2. Users and Volunteers
+async function drawUsersVolunteersChart() {
+    try {
+        // Fetch data from the servlet
+        const response = await fetch('/A3_4739/statistics/usersVolunteersCount');
+        if (!response.ok) throw new Error('Failed to fetch user and volunteer counts.');
+        const data = await response.json();
+
+        // Format data for Google Charts
+        const chartData = google.visualization.arrayToDataTable([
+            ['Type', 'Count'],
+            ['Users', data.total_users],
+            ['Volunteers', data.total_volunteers],
+        ]);
+
+        // Define chart options
+        const options = {
+            title: 'Users and Volunteers Count',
+            is3D: true, // Optional, can use is3D or flat pie chart
+        };
+
+        // Render the chart
+        const chart = new google.visualization.PieChart(document.getElementById('usersVolunteersChart'));
+        chart.draw(chartData, options);
+
+    } catch (error) {
+        console.error('Error fetching chart data:', error);
+        alert('Failed to load chart. Please try again later.');
+    }
+}
+
+// Load the Google Charts library and draw the chart
+google.charts.load('current', { packages: ['corechart'] });
+google.charts.setOnLoadCallback(drawUsersVolunteersChart);
+
+// 3. Vehicles and Firemen
+async function drawVehiclesFiremenChart() {
+    try {
+        const response = await fetch('/A3_4739/statistics/vehiclesFiremenCount');
+        if (!response.ok) throw new Error('Failed to fetch vehicles and firemen count.');
+        const data = await response.json();
+
+        const chartData = google.visualization.arrayToDataTable([
+            ['Category', 'Count'],
+            ['Vehicles', data.total_vehicles],
+            ['Firemen', data.total_firemen]
+        ]);
+
+        const options = { title: 'Vehicles and Firemen Participation', chartArea: { width: '50%' }, hAxis: { title: 'Count' } };
+        const chart = new google.visualization.BarChart(document.getElementById('barchart_vehicles_firemen'));
+        chart.draw(chartData, options);
+    } catch (error) {
+        console.error('Error drawing vehicles and firemen chart:', error);
+    }
+}
+
+

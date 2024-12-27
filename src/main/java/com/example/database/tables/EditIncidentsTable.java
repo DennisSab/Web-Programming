@@ -207,4 +207,19 @@ public class EditIncidentsTable {
             Logger.getLogger(EditIncidentsTable.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public ArrayList<Integer> getAllIncidentIds() throws SQLException, ClassNotFoundException {
+        ArrayList<Integer> incidentIds = new ArrayList<>();
+        Connection con = DB_Connection.getConnection();
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT incident_id FROM incidents");
+        while (rs.next()) {
+            incidentIds.add(rs.getInt("incident_id"));
+        }
+        stmt.close();
+        con.close();
+        return incidentIds;
+    }
+
+
 }
