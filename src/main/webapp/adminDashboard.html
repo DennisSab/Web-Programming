@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="js/logout.js"></script>
+    <script src="js/adminDashboard.js"></script>
+</head>
+<body>
+<div class="dashboard">
+    <h1>Admin Dashboard</h1>
+
+    <!-- STEP 1: Add New Incident Form -->
+    <h2>Καταχώρηση Νέου Συμβάντος</h2>
+    <form id="adminAddIncidentForm">
+        <label>Τύπος Συμβάντος (incident_type):</label>
+        <input type="text" name="incident_type" required><br>
+
+        <label>Περιγραφή (description):</label>
+        <input type="text" name="description" required><br>
+
+        <!-- NEW: user_type, user_phone, finalResult, vehicles, firemen -->
+
+        <label>Είδος Χρήστη (user_type):</label>
+        <input type="text" name="user_type" value="admin"><br>
+        <!-- If the admin is creating it, maybe default to "admin" -->
+
+        <label>Τηλέφωνο (user_phone):</label>
+        <input type="text" name="user_phone"><br>
+
+        <label>Πιθανό Αποτέλεσμα (finalResult):</label>
+        <input type="text" name="finalResult" value="null"><br>
+        <!-- or keep empty, or "null", depends on your logic -->
+
+        <label>Οχήματα (vehicles):</label>
+        <input type="number" name="vehicles" value="0"><br>
+
+        <label>Πυροσβέστες (firemen):</label>
+        <input type="number" name="firemen" value="0"><br>
+        <!-- Adjust as needed -->
+
+        <label>Διεύθυνση (address):</label>
+        <input type="text" name="address"><br>
+
+        <label>Περιοχή (municipality):</label>
+        <input type="text" name="municipality"><br>
+
+        <label>Νομός (prefecture):</label>
+        <input type="text" name="prefecture"><br>
+
+        <label>Γεωγραφικό πλάτος (lat):</label>
+        <input type="text" name="lat"><br>
+
+        <label>Γεωγραφικό μήκος (lon):</label>
+        <input type="text" name="lon"><br>
+
+        <label>Danger Level (danger):</label>
+        <select name="danger">
+            <option value="unknown">unknown</option>
+            <option value="low">low</option>
+            <option value="medium">medium</option>
+            <option value="high">high</option>
+        </select><br>
+
+        <button type="submit">Προσθήκη Συμβάντος</button>
+    </form>
+
+    <!-- A place to show success/error messages -->
+    <div id="adminAddIncidentResult"></div>
+
+    <!-- STEP 2: Existing Incidents List -->
+    <div id="incidents-container"></div>
+
+
+
+    <form id="createVolunteerPositionForm">
+        <label for="incidentId">ID Συμβάντος:</label>
+        <input type="number" id="incidentId" name="incident_id" required><br>
+
+        <label for="positionType">Τύπος Θέσης:</label>
+        <input type="text" id="positionType" name="position_type" required><br>
+
+        <label for="slotsOpen">Διαθέσιμες Θέσεις:</label>
+        <input type="number" id="slotsOpen" name="slots_open" required><br>
+
+        <button type="submit">Δημιουργία Θέσης</button>
+    </form>
+    <div id="createVolunteerPositionResult"></div>
+
+    <!-- STEP 3: Logout Button -->
+    <div class="logout">
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
+
+</body>
+</html>

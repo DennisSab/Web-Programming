@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Incident API Test</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script scr="js/guest.js"></script>
+    <style>
+        body {
+            background-color: #f8d7da;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        h1#welcome-title {
+            font-size: 3em;
+        }
+
+        form {
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+
+        input, button {
+            display: block;
+            width: 90%;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        #active-incidents-container {
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        p {
+            color: red;
+        }
+        footer {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            width: 100%;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            text-align: left;
+        }
+
+        footer h3 {
+            margin-bottom: 10px;
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+
+        footer table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        footer th, footer td {
+            padding: 10px;
+            border: 1px solid #495057;
+        }
+
+        footer th {
+            background-color: #495057;
+        }
+
+        footer a {
+            color: #17a2b8;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .footer-container {
+                text-align: center;
+            }
+
+            footer table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+
+        /* Add padding to the body to create space above footer */
+        body {
+            padding-bottom: 150px; /* Υποθέτουμε ότι το ύψος του footer είναι περίπου 150px */
+        }
+    </style>
+</head>
+<body>
+<h1 id="welcome-title">Incident API</h1>
+
+<h2>Add Incident</h2>
+<form id="add-incident-form">
+    <input type="text" id="incident_type" placeholder="Incident Type (fire/accident)" required>
+    <input type="text" id="description" placeholder="Description" required>
+    <input type="text" id="user_type" placeholder="User Type (guest/admin/user)" required>
+    <input type="text" id="user_phone" placeholder="User Phone" required>
+    <input type="text" id="address" placeholder="Address" required>
+    <input type="number" id="lat" placeholder="Latitude (e.g., 35.42)" step="0.0001">
+    <input type="number" id="lon" placeholder="Longitude (e.g., 25.33)" step="0.0001">
+    <input type="text" id="prefecture" placeholder="Prefecture (heraklion/chania/rethymno/lasithi)" required>
+    <input type="text" id="municipality" placeholder="Municipality" required>
+    <button type="submit">Add Incident</button>
+</form>
+<p id="add-incident-result"></p>
+
+<h2>View Active Incidents</h2>
+<form id="get-incidents-form">
+    <button type="submit">View Active Incidents</button>
+</form>
+<div id="active-incidents-container">
+    <h3>Active Incidents</h3>
+    <ul id="active-incidents-list">
+        <!-- Results will appear here -->
+    </ul>
+</div>
+
+<script>
+    // Add Incident (POST)
+    document.getElementById("add-incident-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const data = {
+            incident_type: document.getElementById("incident_type").value.trim(),
+            description: document.getElementById("description").value.trim(),
+            user_type: document.getElementById("user_type").value.trim(),
+            user_phone: document.getElementById("user_phone").value.trim(),
+            address: document.getElementById("address").value.trim(),
+            lat: parseFloat(document.getElementById("lat").value) || null,
+            lon: parseFloat(document.getElementById("lon").value) || null,
+            prefecture: document.getElementById("prefecture").value.trim(),
+            municipality: document.getElementById("municipality").value.trim()
+        };
+
+        if (!data.incident_type || !data.description || !data.user_type ||
+            !data.user_phone || !data.address || !data.prefecture || !data.municipality) {
+            document.getElementById("add-incident-result").textContent =
+                "Error: All fields are required!";
+            return;
+        }
+
+        fetch("http://localhost:8081/A3_4739/incident", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                // If the server returns a 4xx or 5xx status, throw an error
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.message || "Server error");
+                    });
+                }
+                return response.json();
+            })
+            .then(json => {
+                document.getElementById("add-incident-result").textContent = json.message;
+            })
+            .catch(error => {
+                document.getElementById("add-incident-result").textContent = error.message;
+            });
+    });
+
+    // View Active Incidents (GET)
+    document.getElementById("get-incidents-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const url = "http://localhost:8081/A3_4739/incident/all/running";
+
+        fetch(url, { method: "GET" })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.message || "Server error");
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                const incidentsList = document.getElementById("active-incidents-list");
+                incidentsList.innerHTML = "";
+
+                if (data.length === 0) {
+                    incidentsList.innerHTML = "<li>No active incidents found.</li>";
+                    return;
+                }
+
+                data.forEach(incident => {
+                    const listItem = document.createElement("li");
+                    listItem.innerHTML = `
+                        <strong>Type:</strong> ${incident.incident_type} <br>
+                        <strong>Description:</strong> ${incident.description} <br>
+                        <strong>Location:</strong> ${incident.address || "N/A"} <br>
+                        <strong>Prefecture:</strong> ${incident.prefecture || "N/A"} <br>
+                        <strong>Municipality:</strong> ${incident.municipality || "N/A"}
+                    `;
+                    incidentsList.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                const incidentsList = document.getElementById("active-incidents-list");
+                incidentsList.innerHTML = `<li>Error: ${error.message}</li>`;
+            });
+    });
+</script>
+
+<h2>Στείλτε Ερώτηση στο ChatGPT</h2>
+<form id="chatgpt-form">
+    <select id="chatgpt-default-questions">
+        <option value="Πως να αντιμετωπίσω ένα περιστατικό φωτιάς;">Πως να αντιμετωπίσω ένα περιστατικό φωτιάς</option>
+        <option value="Πως να αντιμετωπίσω ένα περιστατικό ατυχήματος;">Πως να αντιμετωπίσω ένα περιστατικό ατυχήματος</option>
+        <option value="Δώσε μου πληροφορίες για την καλύτερη πρόληψη φωτιάς;">Δώσε μου πληροφορίες για την καλύτερη πρόληψη φωτιάς</option>
+        <option value="Δώσε μου πληροφορίες για την καλύτερη πρόληψη ατυχήματος;">Δώσε μου πληροφορίες για την καλύτερη πρόληψη ατυχήματος</option>
+    </select>
+    <input type="text" id="chatgpt-custom-question" placeholder="Πληκτρολογήστε τη δική σας ερώτηση">
+    <button type="submit">Ρώτησε το ChatGPT</button>
+</form>
+<p id="chatgpt-response"></p>
+
+
+//// links gia site
+<footer>
+    <div class="footer-container">
+        <h3>Πληροφορίες για άλλα sites και links</h3>
+        <p>Βασικές Πληροφορίες για website</p>
+        <p>Ενδεικτικοί σύνδεσμοι ακολουθούν. Γενικά όμως να χρησιμοποιείτε μηχανές αναζήτησης για ό,τι απορία/πρόβλημα έχετε.</p>
+        <table>
+            <thead>
+            <tr>
+                <th>Θέμα</th>
+                <th>Σύνδεσμος</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Σελίδα για Πυροσβεστική</td>
+                <td><a href="https://www.fireservice.gr/" target="_blank">https://www.fireservice.gr/</a></td>
+            </tr>
+            <tr>
+                <td>Σελίδα για χάρτες πυρκαγιών</td>
+                <td><a href="https://civilprotection.gov.gr/arxeio-imerison-xartwn" target="_blank">https://civilprotection.gov.gr/arxeio-imerison-xartwn</a></td>
+            </tr>
+            <tr>
+                <td>Άλλα links</td>
+                <td>
+                    <a href="https://www.facebook.com/" target="_blank">Facebook</a> |
+                    <a href="https://twitter.com/" target="_blank">Twitter</a> |
+                    <a href="https://www.instagram.com/" target="_blank">Instagram</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</footer>
+
+</body>
+</html>

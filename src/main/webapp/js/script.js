@@ -258,13 +258,13 @@ document.getElementById('registrationForm').addEventListener('submit', async fun
         }
 
         if (response.ok && data.success) {
-            window.location.href = `/A3_4739/success.html?message=${encodeURIComponent(data.message)}`;
+            window.location.href = "/A3_4739/success.html";
         } else {
-            window.location.href = `/A3_4739/error.html?message=${encodeURIComponent(data.message || 'An error occurred.')}`;
+            window.location.href = "/A3_4739/error.html";
         }
     } catch (error) {
         console.error('Error:', error);
-        window.location.href = `/A3_4739/error.html?message=${encodeURIComponent('An unexpected error occurred.')}`;
+        window.location.href = "/A3_4739/error.html";
     }
 
 });
