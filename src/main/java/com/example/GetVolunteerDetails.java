@@ -48,6 +48,7 @@ public class GetVolunteerDetails extends HttpServlet {
                     if (rs.next()) {
                         JSONObject volunteerDetails = new JSONObject();
                         volunteerDetails.put("success", true);
+                        volunteerDetails.put("volunteer_id", rs.getString("volunteer_id"));
                         volunteerDetails.put("username", rs.getString("username"));
                         volunteerDetails.put("email", rs.getString("email"));
                         volunteerDetails.put("firstname", rs.getString("firstname"));
@@ -66,6 +67,7 @@ public class GetVolunteerDetails extends HttpServlet {
                         volunteerDetails.put("volunteer_type", rs.getString("volunteer_type"));
                         volunteerDetails.put("height", rs.getString("height"));
                         volunteerDetails.put("weight", rs.getString("weight"));
+
 
                         out.write(volunteerDetails.toString());
                     } else {

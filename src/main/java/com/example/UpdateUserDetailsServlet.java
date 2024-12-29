@@ -36,21 +36,21 @@ public class UpdateUserDetailsServlet extends HttpServlet {
             JSONObject jsonObject = new JSONObject(json.toString());
 
             try (Connection conn = DBConnection.getConnection()) {
-                String query = "UPDATE users SET email = ?, firstname = ?, lastname = ?, birthdate = ?, gender = ?, country = ?, address = ?, municipality = ?, prefecture = ?, job = ?, lat = ?, lon = ? WHERE username = ?";
+                String query = "UPDATE users SET  firstname = ?, lastname = ?, birthdate = ?, gender = ?, country = ?, address = ?, municipality = ?, prefecture = ?, job = ?, lat = ?, lon = ? WHERE username = ?";
                 try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                    stmt.setString(1, jsonObject.getString("email"));
-                    stmt.setString(2, jsonObject.getString("firstname"));
-                    stmt.setString(3, jsonObject.getString("lastname"));
-                    stmt.setString(4, jsonObject.getString("birthdate"));
-                    stmt.setString(5, jsonObject.getString("gender"));
-                    stmt.setString(6, jsonObject.getString("country"));
-                    stmt.setString(7, jsonObject.getString("address"));
-                    stmt.setString(8, jsonObject.getString("municipality"));
-                    stmt.setString(9, jsonObject.getString("prefecture"));
-                    stmt.setString(10, jsonObject.getString("job"));
-                    stmt.setString(11, jsonObject.getString("latitude"));
-                    stmt.setString(12, jsonObject.getString("longitude"));
-                    stmt.setString(13, username);
+
+                    stmt.setString(1, jsonObject.getString("firstname"));
+                    stmt.setString(2, jsonObject.getString("lastname"));
+                    stmt.setString(3, jsonObject.getString("birthdate"));
+                    stmt.setString(4, jsonObject.getString("gender"));
+                    stmt.setString(5, jsonObject.getString("country"));
+                    stmt.setString(6, jsonObject.getString("address"));
+                    stmt.setString(7, jsonObject.getString("municipality"));
+                    stmt.setString(8, jsonObject.getString("prefecture"));
+                    stmt.setString(9, jsonObject.getString("job"));
+                    stmt.setString(10, jsonObject.getString("latitude"));
+                    stmt.setString(11, jsonObject.getString("longitude"));
+                    stmt.setString(12, username);
 
                     int rowsUpdated = stmt.executeUpdate();
                     if (rowsUpdated > 0) {

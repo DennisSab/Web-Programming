@@ -1,12 +1,26 @@
 package com.example.mainClasses;
 
 
+import com.google.gson.annotations.SerializedName;
+
+import java.io.BufferedReader;
+
 public class VolunteerRequest {
     private int id; // Primary key
+
+    @SerializedName("incident_id")
     private int incidentId; // Foreign key referencing the incident
+
+    @SerializedName("volunteer_id")
     private int volunteerId; // User ID of the volunteer
+
+    @SerializedName("position_type")
     private String positionType; // The type of position requested
+
+    @SerializedName("status")
     private String status; // e.g., "pending", "approved", "rejected"
+
+    @SerializedName("request_data")
     private String requestDate; // Date of the request
 
     // Default constructor
@@ -82,4 +96,5 @@ public class VolunteerRequest {
                 ", requestDate='" + requestDate + '\'' +
                 '}';
     }
+
 }

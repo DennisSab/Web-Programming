@@ -16,6 +16,7 @@ public class VolunteerPosition {
     @SerializedName("slots_open")
     private int slotsOpen; // How many slots are available
 
+    @SerializedName("slots_filled")
     private int slotsFilled = 0; // How many slots have been filled (default to 0)
 
     // Default constructor

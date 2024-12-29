@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Volunteer Dashboard</title>
-    <script src="js/logout.js"></script>
-    <script src="js/volunteerDashboard.js"></script>
 </head>
 <body>
 <div class="dashboard">
@@ -105,68 +103,98 @@
 </div>
 <br>
 <button id="saveChangesButton" style="display: none;">Save Changes</button>
-    <div class="logout">
-        <button onclick="logout()">Logout</button>
+<br>
+
+<div id="positionsSection">
+    <h2>Available Positions</h2>
+    <table id="positionsTable" border="1">
+        <thead>
+        <tr>
+            <th>Select</th>
+            <th>Incident ID</th>
+            <th>Position Type</th>
+            <th>Slots Open</th>
+            <th>Slots Filled</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Positions will be dynamically added here -->
+        </tbody>
+    </table>
+</div>
+
+<div id="makeRequestSection">
+    <h2>Make a Volunteer Request</h2>
+    <form id="volunteerRequestForm" onsubmit="submitVolunteerRequest(event)">
+        <label for="selectedPositionId">Selected Position:</label>
+        <input type="text" id="selectedPositionId" readonly />
+        <button type="submit">Submit Request</button>
+    </form>
+    <p id="responseMessage"></p>
+</div>
+
+
+<div id="sendMessageSection">
+    <h3>Send a Message</h3>
+    <form id="sendMessageForm">
+        <label for="incidentSelect">Select Incident:</label>
+        <select id="incidentSelect">
+            <!-- Dynamically populated options -->
+        </select>
+        <br />
+
+        <label for="recipient">Recipient:</label>
+        <select id="recipient">
+            <option value="public">Public</option>
+            <option value="volunteers">Volunteers</option>
+            <option value="admin">Admin</option>
+        </select>
+        <br />
+
+        <label for="messageContent">Message:</label>
+        <textarea id="messageContent" rows="4" placeholder="Type your message here..."></textarea>
+        <br />
+
+        <button type="submit">Send Message</button>
+    </form>
+    <p id="sendMessageResult"></p>
+</div>
+
+<br>
+
+<div id="messagesSection">
+    <h3>Messages for Your Incidents</h3>
+    <div id="messagesList">
+        <!-- Messages will be dynamically loaded here -->
     </div>
-<script>
-    function enableEditing(fieldId) {
-        const displayElement = document.getElementById(`${fieldId}Display`);
-        const inputElement = document.getElementById(fieldId);
+</div>
 
-        displayElement.style.display = "none";
-        inputElement.style.display = "inline-block";
-        document.getElementById("saveChangesButton").style.display = "inline-block";
-    }
+<br>
 
-    const editableFields = [
-        "email", "firstname", "lastname", "birthdate", "gender",
-        "country", "address", "municipality", "prefecture", "job",
-        "latitude", "longitude","volunteer_type","height","weight"
-    ];
+<div id="volunteerHistorySection">
+    <h3>Volunteer History</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Incident ID</th>
+            <th>Description</th>
+            <th>Start Date/Time</th>
+            <th>End Date/Time</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody id="historyTableBody">
+        <!-- Dynamically populated rows -->
+        </tbody>
+    </table>
+</div>
 
-    editableFields.forEach(field => {
-        const buttonId = `edit${field.charAt(0).toUpperCase() + field.slice(1)}`;
-        console.log(`Looking for button with ID: ${buttonId}`);
-        const button = document.getElementById(buttonId);
-        if (button) {
-            button.addEventListener("click", () => enableEditing(field));
-        } else {
-            console.error(`Button with ID "${buttonId}" not found.`);
-        }
-    });
+<br>
+<div class="logout">
+    <button onclick="logout()">Logout</button>
+</div>
 
-    // Save Changes
-    document.getElementById("saveChangesButton").addEventListener("click", async () => {
-        const updatedDetails = {};
-
-        editableFields.forEach(field => {
-            const inputElement = document.getElementById(field);
-            if (inputElement && inputElement.style.display !== "none") {
-                updatedDetails[field] = inputElement.value;
-            }
-        });
-
-        //AJAX REQUEST
-        try {
-            const response = await fetch("/A3_4739/updateVolunteerDetails", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(updatedDetails),
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                alert("Profile updated successfully!");
-                location.reload();
-            } else {
-                alert(`Error updating profile: ${data.message}`);
-            }
-        } catch (error) {
-            console.error("Error updating profile:", error);
-        }
-    });
-</script>
-
+<script src="js/logout.js"></script>
+<script src="js/volunteerDashboard.js"></script>
 </body>
 </html>

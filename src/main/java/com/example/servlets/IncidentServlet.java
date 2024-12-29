@@ -23,38 +23,33 @@ public class IncidentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        // Check which pattern the user is requesting:
-        //   /incident          => might do something else
-        //   /incident/all/running => return all active incidents
         String path = req.getServletPath() + (req.getPathInfo() == null ? "" : req.getPathInfo());
 
         resp.setContentType("application/json");
         try (PrintWriter out = resp.getWriter()) {
 
-            // If user hits /incident/all/running
             if ("/incident/all/running".equals(path)) {
                 List<Incident> activeIncidents = new ArrayList<>();
                 try (Connection connection = DBConnection.getConnection()) {
-                    // Adjust your DB query for retrieving "active" or "running" incidents
                     String sql = "SELECT * FROM incidents WHERE status = 'running'";
                     PreparedStatement stmt = connection.prepareStatement(sql);
 
                     ResultSet rs = stmt.executeQuery();
                     while (rs.next()) {
                         Incident inc = new Incident();
+                        inc.setIncident_id(rs.getInt("incident_id"));
                         inc.setIncident_type(rs.getString("incident_type"));
                         inc.setDescription(rs.getString("description"));
                         inc.setAddress(rs.getString("address"));
                         inc.setPrefecture(rs.getString("prefecture"));
                         inc.setMunicipality(rs.getString("municipality"));
+                        inc.setLat(rs.getDouble("lat")); // Fetch lat
+                        inc.setLon(rs.getDouble("lon")); // Fetch lon
                         activeIncidents.add(inc);
                     }
                 }
-                // Return JSON array
-                out.println(gson.toJson(activeIncidents));
-            }
-            // If user hits /incident with GET (not used in your forms, but we can handle or return 404)
-            else {
+                out.println(gson.toJson(activeIncidents)); // Return JSON array
+            } else {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 out.println("{\"message\": \"GET /incident not found\"}");
             }
@@ -68,6 +63,7 @@ public class IncidentServlet extends HttpServlet {
             resp.getWriter().write("{\"message\": \"An unexpected error occurred on GET\"}");
         }
     }
+
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
