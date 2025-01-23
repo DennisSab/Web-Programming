@@ -1,5 +1,5 @@
 body {
-    background-color: #f8d7da;
+    background-color: #e6f7e6; /* Light green background */
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
@@ -7,7 +7,7 @@ body {
 }
 
 h1, h2 {
-    color: #333;
+    color: #2f4f4f; /* Darker green for headings */
 }
 
 h1#welcome-title {
@@ -30,19 +30,19 @@ input, button {
     margin: 10px auto;
     padding: 10px;
     font-size: 16px;
-    border: 1px solid #ccc;
+    border: 1px solid #8fbc8f; /* Light green border */
     border-radius: 5px;
 }
 
 button {
-    background-color: #333;
+    background-color: #2f4f4f; /* Darker green for buttons */
     color: white;
     cursor: pointer;
     transition: 0.3s;
 }
 
 button:hover {
-    background-color: #555;
+    background-color: #556b2f; /* Slightly different green on hover */
 }
 
 #active-incidents-container {
@@ -65,10 +65,11 @@ li {
 }
 
 p {
-    color: red;
+    color: #8b0000; /* Dark red for error messages */
 }
+
 footer {
-    background-color: #343a40;
+    background-color: #2f4f4f; /* Darker green for footer */
     color: white;
     padding: 20px 0;
     width: 100%;
@@ -125,7 +126,6 @@ footer a:hover {
     }
 }
 
-/* Add padding to the body to create space above footer */
 body {
-    padding-bottom: 150px; /* Υποθέτουμε ότι το ύψος του footer είναι περίπου 150px */
+    padding-bottom: 150px; /* Adding padding to the body */
 }

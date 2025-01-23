@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <script src="js/logout.js"></script>
+    <link rel="stylesheet" href="css/admin.css">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
@@ -12,47 +13,47 @@
     <h1>Admin Dashboard</h1>
 
     <!-- STEP 1: Add New Incident Form -->
-    <h2>Καταχώρηση Νέου Συμβάντος</h2>
+    <h2>Add New Incident</h2>
     <form id="adminAddIncidentForm">
-        <label>Τύπος Συμβάντος (incident_type):</label>
+        <label>Incident Type (incident_type):</label>
         <input type="text" name="incident_type" required><br>
 
-        <label>Περιγραφή (description):</label>
+        <label>Description (description):</label>
         <input type="text" name="description" required><br>
 
         <!-- NEW: user_type, user_phone, finalResult, vehicles, firemen -->
 
-        <label>Είδος Χρήστη (user_type):</label>
+        <label>User Type (user_type):</label>
         <input type="text" name="user_type" value="admin"><br>
         <!-- If the admin is creating it, maybe default to "admin" -->
 
-        <label>Τηλέφωνο (user_phone):</label>
+        <label>Phone (user_phone):</label>
         <input type="text" name="user_phone"><br>
 
-        <label>Πιθανό Αποτέλεσμα (finalResult):</label>
+        <label>Final Result (finalResult):</label>
         <input type="text" name="finalResult" value="null"><br>
         <!-- or keep empty, or "null", depends on your logic -->
 
-        <label>Οχήματα (vehicles):</label>
+        <label>Vehicles (vehicles):</label>
         <input type="number" name="vehicles" value="0"><br>
 
-        <label>Πυροσβέστες (firemen):</label>
+        <label>Firemen (firemen):</label>
         <input type="number" name="firemen" value="0"><br>
         <!-- Adjust as needed -->
 
-        <label>Διεύθυνση (address):</label>
+        <label>Address (address):</label>
         <input type="text" name="address"><br>
 
-        <label>Περιοχή (municipality):</label>
+        <label>Municipality (municipality):</label>
         <input type="text" name="municipality"><br>
 
-        <label>Νομός (prefecture):</label>
+        <label>Prefecture (prefecture):</label>
         <input type="text" name="prefecture"><br>
 
-        <label>Γεωγραφικό πλάτος (lat):</label>
+        <label>Latitude (lat):</label>
         <input type="text" name="lat"><br>
 
-        <label>Γεωγραφικό μήκος (lon):</label>
+        <label>Longitude (lon):</label>
         <input type="text" name="lon"><br>
 
         <label>Danger Level (danger):</label>
@@ -63,7 +64,7 @@
             <option value="high">high</option>
         </select><br>
 
-        <button type="submit">Προσθήκη Συμβάντος</button>
+        <button type="submit">Add Incident</button>
     </form>
 
     <!-- A place to show success/error messages -->
@@ -72,25 +73,22 @@
     <!-- STEP 2: Existing Incidents List -->
     <div id="incidents-container"></div>
 
-
-
     <form id="createVolunteerPositionForm">
-        <label for="incidentId">ID Συμβάντος:</label>
+        <label for="incidentId">Incident ID:</label>
         <input type="number" id="incidentId" name="incident_id" required><br>
 
-        <label for="positionType">Τύπος Θέσης:</label>
+        <label for="positionType">Position Type:</label>
         <input type="text" id="positionType" name="position_type" required><br>
 
-        <label for="slotsOpen">Διαθέσιμες Θέσεις:</label>
+        <label for="slotsOpen">Available Slots:</label>
         <input type="number" id="slotsOpen" name="slots_open" required><br>
 
-        <button type="submit">Δημιουργία Θέσης</button>
+        <button type="submit">Create Position</button>
     </form>
     <div id="createVolunteerPositionResult"></div>
 
     <h2>Volunteer Requests</h2>
     <div id="volunteerRequestsContainer"></div>
-
 
     <h3>Available Incidents</h3>
     <table id="incidentTable" border="1">
@@ -127,7 +125,6 @@
     <div id="piechart" style="width: 900px; height: 500px;"></div>
     <div id="usersVolunteersChart" style="width: 900px; height: 500px;"></div>
     <div id="barchart_vehicles_firemen" style="width: 900px; height: 500px;"></div>
-
 
     <!-- STEP 3: Logout Button -->
     <div class="logout">

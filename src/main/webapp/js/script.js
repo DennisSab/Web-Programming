@@ -10,10 +10,7 @@ document.getElementById('type').addEventListener('change', function() {
         heightField.setAttribute('required', 'required');
         weightField.setAttribute('required', 'required');
 
-        termsText.innerHTML = `
-            Απαγορεύεται η άσκοπη χρήση της εφαρμογής. Συμφωνώ πως η άσκοπη χρήση της θα διώκεται ποινικά.
-            Δηλώνω υπεύθυνα ότι ανήκω στο ενεργό δυναμικό των εθελοντών πυροσβεστών.
-        `;
+        termsText.innerHTML = `Unnecessary use of the application is prohibited. I agree that unnecessary use will be prosecuted. I hereby declare that I am an active member of the volunteer firefighters.`;
     } else {
         volunteerFields.style.display = 'none';
 
