@@ -17,9 +17,11 @@ E-199 is an online system designed to assist fire departments in managing emerge
   - Google Maps (for incident mapping)
   - TrueWay Matrix (for distance calculations)
 
-##👥 Team
+## 👥 Team
 
 This project was developed by a team of two students:
 
-[Ntenis Sampani]
-[Noriana Tzatzai]
+- **[Ntenis Sampani](https://github.com/DennisSab)**  
+- **[Noriana Tzatzai](https://github.com/noriana09)**  
+
+Feel free to connect with us!
